@@ -50,6 +50,7 @@ dnf -y install --enablerepo="copr:copr.fedorainfracloud.org:ublue-os:packages" -
     ublue-os-libvirt-workarounds
 
 dnf -y install https://github.com/fastfetch-cli/fastfetch/releases/download/2.50.2/fastfetch-linux-amd64.rpm
+mv '/usr/share/doc/just/README.中文.md' '/usr/share/doc/just/README.zh-cn.md'
 
 dnf -y install epel-release
 dnf config-manager --set-disabled epel
