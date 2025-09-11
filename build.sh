@@ -51,6 +51,17 @@ dnf -y install --enablerepo="copr:copr.fedorainfracloud.org:ublue-os:packages" -
 
 dnf -y install https://github.com/fastfetch-cli/fastfetch/releases/download/2.50.2/fastfetch-linux-amd64.rpm
 
+dnf -y install NetworkManager-wifi \
+    atheros-firmware \
+    brcmfmac-firmware \
+    iwlegacy-firmware \
+    iwlwifi-dvm-firmware \
+    iwlwifi-mvm-firmware \
+    mt7xxx-firmware \
+    nxpwireless-firmware \
+    realtek-firmware \
+    tiwilink-firmware
+
 dnf -y install epel-release
 dnf config-manager --set-disabled epel
 dnf -y install --enablerepo="epel" just
