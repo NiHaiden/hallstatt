@@ -39,6 +39,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
+      - name: Lowercase registry names
+        id: registry
+        run: |
+          echo "image_registry=ghcr.io/${OWNER,,}" >> $GITHUB_OUTPUT
+          echo "username=${ACTOR,,}" >> $GITHUB_OUTPUT
+        env:
+          OWNER: ${{ github.repository_owner }}
+          ACTOR: ${{ github.actor }}
+
       - name: Get current date
         id: date
         run: |
@@ -92,7 +101,7 @@ jobs:
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ steps.registry.outputs.username }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push To GHCR
@@ -100,10 +109,10 @@ jobs:
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         id: push
         env:
-          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_USER: ${{ steps.registry.outputs.username }}
           REGISTRY_PASSWORD: ${{ github.token }}
         with:
-          registry: ${{ env.IMAGE_REGISTRY }}
+          registry: ${{ steps.registry.outputs.image_registry }}
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ steps.metadata.outputs.tags }}
           username: ${{ env.REGISTRY_USER }}
@@ -116,7 +125,7 @@ jobs:
       - name: Sign container image
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         run: |
-          IMAGE_FULL="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          IMAGE_FULL="${{ steps.registry.outputs.image_registry }}/${{ env.IMAGE_NAME }}"
           for tag in ${{ steps.metadata.outputs.tags }}; do
             cosign sign -y --key env://COSIGN_PRIVATE_KEY $IMAGE_FULL:$tag
           done
