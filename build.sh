@@ -64,7 +64,7 @@ dnf -y install NetworkManager-wifi \
 
 dnf -y install epel-release
 dnf config-manager --set-disabled epel
-dnf -y install --enablerepo="epel" just
+dnf -y install --enablerepo="epel" just btop htop
 
 tee /usr/lib/systemd/zram-generator.conf <<EOF
 [zram0]
