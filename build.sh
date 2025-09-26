@@ -66,6 +66,10 @@ dnf -y install epel-release
 dnf config-manager --set-disabled epel
 dnf -y install --enablerepo="epel" just btop htop
 
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf config-manager --set-disabled docker-ce
+dnf -y install --enablerepo="docker-ce" docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 tee /usr/lib/systemd/zram-generator.conf <<EOF
 [zram0]
 zram-size = min(ram, 8192)
