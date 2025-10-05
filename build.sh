@@ -92,7 +92,7 @@ gpgkey=https://download.docker.com/linux/centos/gpg
 EOF  
   
 # 4. Install Docker packages  
-dnf5 -y install \  
+dnf -y install \  
     containerd.io \  
     docker-buildx-plugin \  
     docker-ce \  
