@@ -65,6 +65,48 @@ dnf -y install NetworkManager-wifi \
 dnf -y install epel-release
 dnf config-manager --set-disabled epel
 dnf -y install --enablerepo="epel" just btop htop
+  
+echo "Installing Docker CE..."  
+  
+# 1. Apply IP forwarding configuration (prevents Docker from interfering with LXC)  
+cat > /etc/sysctl.d/99-docker.conf <<EOF  
+net.ipv4.ip_forward = 1  
+net.ipv6.conf.all.forwarding = 1  
+EOF  
+sysctl -p /etc/sysctl.d/99-docker.conf  
+  
+# 2. Load iptable_nat module for docker-in-docker support  
+mkdir -p /etc/modules-load.d  
+cat > /etc/modules-load.d/ip_tables.conf <<EOF  
+iptable_nat  
+EOF  
+  
+# 3. Add Docker CE repository  
+cat > /etc/yum.repos.d/docker-ce.repo <<EOF  
+[docker-ce-stable]  
+name=Docker CE Stable - \$basearch  
+baseurl=https://download.docker.com/linux/centos/\$releasever/\$basearch/stable  
+enabled=1  
+gpgcheck=1  
+gpgkey=https://download.docker.com/linux/centos/gpg  
+EOF  
+  
+# 4. Install Docker packages  
+dnf5 -y install \  
+    containerd.io \  
+    docker-buildx-plugin \  
+    docker-ce \  
+    docker-ce-cli \  
+    docker-compose-plugin  
+  
+# 5. Enable Docker socket (socket activation for on-demand startup)  
+systemctl enable docker.socket  
+  
+# 6. Disable Docker repository to prevent runtime updates  
+sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/docker-ce.repo  
+  
+echo "Docker CE installation complete!"
+
 
 tee /usr/lib/systemd/zram-generator.conf <<EOF
 [zram0]
