@@ -65,39 +65,30 @@ dnf -y install NetworkManager-wifi \
 dnf -y install epel-release
 dnf config-manager --set-disabled epel
 dnf -y install --enablerepo="epel" just btop htop
+
+# Apply IP Forwarding before installing Docker to prevent messing with LXC networking
+sysctl -p
+
+# Load iptable_nat module for docker-in-docker.
+# See:
+#   - https://github.com/ublue-os/bluefin/issues/2365
+#   - https://github.com/devcontainers/features/issues/1235
+mkdir -p /etc/modules-load.d && cat >>/etc/modules-load.d/ip_tables.conf <<EOF
+iptable_nat
+EOF
   
 echo "Installing Docker CE..."  
-  
-# 1. Apply IP forwarding configuration (prevents Docker from interfering with LXC)  
-cat > /etc/sysctl.d/99-docker.conf <<EOF  
-net.ipv4.ip_forward = 1  
-net.ipv6.conf.all.forwarding = 1  
-EOF  
-sysctl -p /etc/sysctl.d/99-docker.conf  
-  
-# 2. Load iptable_nat module for docker-in-docker support  
-mkdir -p /etc/modules-load.d  
-cat > /etc/modules-load.d/ip_tables.conf <<EOF  
-iptable_nat  
-EOF  
-  
-# 3. Add Docker CE repository  
-cat > /etc/yum.repos.d/docker-ce.repo <<EOF  
-[docker-ce-stable]  
-name=Docker CE Stable - \$basearch  
-baseurl=https://download.docker.com/linux/centos/\$releasever/\$basearch/stable  
-enabled=1  
-gpgcheck=1  
-gpgkey=https://download.docker.com/linux/centos/gpg  
-EOF  
+
+cp /repos/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
 
 dnf config-manager --set-disabled docker-ce-stable
 
 # 4. Install Docker packages  
 dnf -y install --enablerepo="docker-ce-stable" containerd.io docker-buildx-plugin docker-ce docker-ce-cli docker-compose-plugin  
   
-# 5. Enable Docker socket (socket activation for on-demand startup)  
-systemctl enable docker.socket  
+if rpm -q docker-ce >/dev/null; then
+    systemctl enable docker.socket
+fi
   
 # 6. Disable Docker repository to prevent runtime updates    
 echo "Docker CE installation complete!"

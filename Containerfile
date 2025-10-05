@@ -1,6 +1,7 @@
 FROM scratch AS ctx
 
 COPY build.sh /build.sh
+COPY repos /repos
 
 FROM quay.io/centos-bootc/centos-bootc:c10s
 
