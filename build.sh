@@ -90,21 +90,16 @@ enabled=1
 gpgcheck=1  
 gpgkey=https://download.docker.com/linux/centos/gpg  
 EOF  
-  
+
+dnf config-manager --set-disabled docker-ce-stable
+
 # 4. Install Docker packages  
-dnf -y install \  
-    containerd.io \  
-    docker-buildx-plugin \  
-    docker-ce \  
-    docker-ce-cli \  
-    docker-compose-plugin  
+dnf -y install --enablerepo="docker-ce-stable" containerd.io docker-buildx-plugin docker-ce docker-ce-cli docker-compose-plugin  
   
 # 5. Enable Docker socket (socket activation for on-demand startup)  
 systemctl enable docker.socket  
   
-# 6. Disable Docker repository to prevent runtime updates  
-sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/docker-ce.repo  
-  
+# 6. Disable Docker repository to prevent runtime updates    
 echo "Docker CE installation complete!"
 
 
