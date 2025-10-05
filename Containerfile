@@ -1,9 +1,11 @@
 FROM scratch AS ctx
 
 COPY build.sh /build.sh
-COPY repos /repos
 
 FROM quay.io/centos-bootc/centos-bootc:c10s
+
+COPY repos/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
+
 
 RUN --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \

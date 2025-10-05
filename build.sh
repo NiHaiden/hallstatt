@@ -79,8 +79,6 @@ EOF
   
 echo "Installing Docker CE..."  
 
-cp /repos/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
-
 dnf config-manager --set-disabled docker-ce-stable
 
 # 4. Install Docker packages  
