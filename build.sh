@@ -95,6 +95,10 @@ fi
 # 6. Disable Docker repository to prevent runtime updates    
 echo "Docker CE installation complete!"
 
+echo "Installing cloud init" 
+
+dnf install -y cloud-init
+
 
 tee /usr/lib/systemd/zram-generator.conf <<EOF
 [zram0]
