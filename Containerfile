@@ -5,7 +5,7 @@ COPY build.sh /build.sh
 FROM quay.io/centos-bootc/centos-bootc:c10s
 
 COPY repos/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
-
+COPY build_files/docker.conf /usr/lib/sysusers.d/docker.conf
 
 RUN --mount=type=tmpfs,dst=/var \
     --mount=type=tmpfs,dst=/tmp \

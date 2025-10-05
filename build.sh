@@ -89,7 +89,8 @@ if rpm -q docker-ce >/dev/null; then
 fi
 
 
-rm -rf /etc/group
+
+# rm -rf /etc/group
   
 # 6. Disable Docker repository to prevent runtime updates    
 echo "Docker CE installation complete!"
